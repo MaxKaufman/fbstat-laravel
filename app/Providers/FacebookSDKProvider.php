@@ -9,13 +9,17 @@
 namespace App\Providers;
 
 
+
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Config;
 use FacebookAds\Api;
+use FacebookAds\Object\AdSet;
 use FacebookAds\Object\AdAccount;
+use FacebookAds\Object\Campaign;
 use FacebookAds\Logger\CurlLogger;
 
 use FacebookAds\Object as FacebookAdsObject;
+
 
 
 class FacebookSDKProvider extends ServiceProvider
@@ -42,13 +46,6 @@ class FacebookSDKProvider extends ServiceProvider
         });
 
 
-        /*  $this->app->when([Object\AdAccount::class])
-              ->needs('$id')
-              ->give(function() {
-                  $this->app->get(Api::class);*
-                  $config = $this->app->make()
-              });*/
-
         $this->app->when([
             FacebookAdsObject\AdAccount::class,
         ])
@@ -59,6 +56,22 @@ class FacebookSDKProvider extends ServiceProvider
                 }
             );
 
+        $this->app->when([
+            FacebookAdsObject\Campaign::class,
+        ])
+            ->needs('$id')
+            ->give(
+                function () {
+                    return $this->app->make(Config\Repository::class)->get('facebooksdk.campaign_id');
+                }
+            );
+
+        /*  $this->app->when([Object\AdAccount::class])
+              ->needs('$id')
+              ->give(function() {
+                  $this->app->get(Api::class);*
+                  $config = $this->app->make()
+              });*/
     }
 
                     /*
